@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course de Rottweilers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px 0;
+        }
+        #race-track {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #e1e1e1;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        .lane {
+            height: 50px;
+            border-bottom: 1px solid #999;
+            position: relative;
+        }
+        .rottweiler {
+            position: absolute;
+            height: 50px;
+            width: 50px;
+            top: 0;
+            left: 0;
+            background-image: url('rottweiler.png');
+            background-size: cover;
+            transition: left 0.2s ease-out;
+        }
+        #start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 20px 0;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Course de Rottweilers</h1>
+    <button id="start-button">Lancer la course</button>
+    <div id="race-track"></div>
+    <h2 id="winner"></h2>
+    <script src="script.js"></script>
+</body>
+</html>
