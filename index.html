@@ -3,42 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course de Rottweilers</title>
+    <title>Rottweiler Race</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #d0f0c0;
         }
-        #settings {
-            margin-bottom: 20px;
-        }
-        #race-track {
-            margin: 0 auto;
-            width: 80%;
+        .race-container {
             position: relative;
-            border: 2px solid #333;
+            width: 90%;
+            height: 80%;
             background: url('dirt-texture.png') repeat;
+            border: 5px solid #8b4513;
+            overflow: hidden;
+        }
+        .track {
+            position: relative;
+            width: 100%;
+            height: 20%;
+            border-bottom: 2px solid #654321;
+            display: flex;
+            align-items: center;
+            background: url('grass-texture.png') repeat;
+        }
+        .track:last-child {
+            border-bottom: none;
         }
         .rottweiler {
             position: absolute;
-            height: 50px;
-            transition: transform 0.5s;
+            height: 80%;
+            transition: transform 0.1s linear;
+        }
+        .finish-line {
+            position: absolute;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background-color: red;
         }
     </style>
 </head>
 <body>
-    <h1>Course de Rottweilers</h1>
-    <div id="settings">
-        <label for="numRottweilers">Nombre de participants :</label>
-        <input type="number" id="numRottweilers" value="5" min="2" max="10">
-        <br>
-        <label for="raceTime">Temps de la course (secondes) :</label>
-        <input type="number" id="raceTime" value="10" min="5" max="30">
-        <br><br>
-        <button onclick="startRace()">Lancer la course</button>
+    <div id="app" class="race-container">
+        <div class="finish-line"></div>
     </div>
-    <div id="race-track"></div>
-    <script src="script.js"></script>
+
+    <script src="race.js"></script>
 </body>
 </html>
