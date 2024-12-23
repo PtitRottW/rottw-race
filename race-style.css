@@ -1,0 +1,75 @@
+/* Compatible CSS for Duck Race Clone */
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #b0e0e6, #87ceeb); /* Sky blue gradient */
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.track {
+    position: relative;
+    width: 100%;
+    height: calc(100vh / 10); /* Divide screen into equal tracks */
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    background: #98fb98; /* Grass green */
+    display: flex;
+    align-items: center;
+}
+
+.rottweiler {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    transition: transform 1s linear;
+    height: 50px;
+    width: auto;
+}
+
+.name-tag {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.controls input, .controls button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+    .track {
+        height: calc(100vh / 5); /* Fewer tracks for smaller screens */
+    }
+
+    .rottweiler {
+        height: 40px;
+    }
+
+    .name-tag {
+        font-size: 12px;
+    }
+}
