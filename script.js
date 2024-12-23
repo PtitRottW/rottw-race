@@ -1,54 +1,62 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Images des participants
+const rottweilerImages = [
+    'rottweiler1.png',
+    'rottweiler2.png',
+    'rottweiler3.png',
+    'rottweiler4.png',
+    'rottweiler5.png',
+    'rottweiler6.png',
+    'rottweiler7.png',
+    'rottweiler8.png',
+    'rottweiler9.png',
+    'rottweiler10.png',
+];
+
+// Fonction pour démarrer la course
+function startRace() {
     const raceTrack = document.getElementById('race-track');
-    const startButton = document.getElementById('start-button');
-    const winnerDisplay = document.getElementById('winner');
-    const rottweilers = [];
-    const numRottweilers = 5; // Nombre de rottweilers dans la course
+    const numRottweilers = parseInt(document.getElementById('numRottweilers').value);
+    const raceTime = parseInt(document.getElementById('raceTime').value) * 1000;
 
-    // Créer les couloirs et les rottweilers
+    // Réinitialiser la piste
+    raceTrack.innerHTML = '';
+    raceTrack.style.height = `${numRottweilers * 60}px`;
+
+    // Créer les participants
     for (let i = 0; i < numRottweilers; i++) {
-        const lane = document.createElement('div');
-        lane.classList.add('lane');
-        lane.style.top = `${i * 60}px`;
-
-        const rottweiler = document.createElement('div');
-        rottweiler.classList.add('rottweiler');
-        rottweiler.id = `rottweiler-${i + 1}`;
-
-        lane.appendChild(rottweiler);
-        raceTrack.appendChild(lane);
-        rottweilers.push(rottweiler);
+        const rottweiler = document.createElement('img');
+        rottweiler.src = rottweilerImages[i % rottweilerImages.length];
+        rottweiler.className = 'rottweiler';
+        rottweiler.style.top = `${i * 60}px`;
+        rottweiler.style.left = '0px';
+        raceTrack.appendChild(rottweiler);
     }
 
-    // Fonction pour lancer la course
-    function startRace() {
-        winnerDisplay.textContent = ''; // Réinitialiser le gagnant
-        startButton.disabled = true; // Désactiver le bouton pendant la course
+    // Lancer la course
+    const participants = document.querySelectorAll('.rottweiler');
+    let finishLine = raceTrack.offsetWidth - 100; // Position de la ligne d'arrivée
 
-        let finished = false;
+    participants.forEach((rottweiler) => {
+        const randomDistance = Math.random() * finishLine;
+        setTimeout(() => {
+            rottweiler.style.transform = `translateX(${randomDistance}px)`;
+        }, Math.random() * raceTime);
+    });
 
-        rottweilers.forEach((rottweiler, index) => {
-            rottweiler.style.left = '0px'; // Réinitialiser les positions
+    // Déterminer le gagnant
+    setTimeout(() => {
+        let winner = null;
+        let maxDistance = 0;
+
+        participants.forEach((rottweiler, index) => {
+            const transform = rottweiler.style.transform;
+            const distance = parseFloat(transform.match(/translateX\((\d+(\.\d+)?)px\)/)[1]);
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                winner = index + 1;
+            }
         });
 
-        const interval = setInterval(() => {
-            rottweilers.forEach((rottweiler) => {
-                const progress = parseInt(rottweiler.style.left || 0, 10);
-                const randomStep = Math.floor(Math.random() * 10); // Avancement aléatoire
-                const newProgress = progress + randomStep;
-
-                rottweiler.style.left = `${newProgress}px`;
-
-                if (newProgress >= raceTrack.offsetWidth - 60 && !finished) {
-                    finished = true;
-                    clearInterval(interval);
-                    const winnerId = rottweiler.id;
-                    winnerDisplay.textContent = `${winnerId.replace('rottweiler-', 'Rottweiler ')} a gagné la course ! 🎉`;
-                    startButton.disabled = false; // Réactiver le bouton
-                }
-            });
-        }, 100);
-    }
-
-    startButton.addEventListener('click', startRace);
-});
+        alert(`Le gagnant est le participant #${winner} !`);
+    }, raceTime + 100); // Ajoutez un peu de temps pour la transition
+}
