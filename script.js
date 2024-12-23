@@ -2,8 +2,14 @@ const app = document.getElementById('app');
 app.style.height = "100vh";
 app.style.margin = "0";
 app.style.overflow = "hidden";
+app.style.background = "linear-gradient(to bottom, #87CEEB, #00BFFF)"; // Sky background
 
-const totalTracks = 20;
+const totalTracks = 8;
+const maxParticipants = 20;
+
+// Array to store participants' names
+let participantNames = new Array(totalTracks).fill('').map((_, i) => `Participant ${i + 1}`);
+
 const rottweilers = [
     'rottweiler1.png',
     'rottweiler2.png',
@@ -12,40 +18,10 @@ const rottweilers = [
     'rottweiler5.png'
 ];
 
-let names = []; // This will hold the participant names entered by the user
-
-// Create a form to collect participant names
-const form = document.createElement('form');
-form.id = 'participant-form';
-form.innerHTML = `
-    <h2>Enter Participant Names (Up to ${totalTracks}):</h2>
-    <div id="name-inputs">
-        ${Array.from({ length: totalTracks }).map((_, i) => `<input type="text" placeholder="Name ${i + 1}" class="name-input">`).join('')}
-    </div>
-    <button type="submit">Start Race</button>
-`;
-app.appendChild(form);
-
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    // Collect names from input fields
-    const inputs = document.querySelectorAll('.name-input');
-    names = Array.from(inputs).map(input => input.value.trim()).filter(name => name !== '');
-
-    if (names.length === 0) {
-        alert('Please enter at least one participant name.');
-        return;
-    }
-
-    // Hide the form and start the race
-    form.style.display = 'none';
-    startGame();
-});
-
 function createTrack(index, scaleFactor) {
     const track = document.createElement('div');
     track.classList.add('track');
+    track.style.height = `${100 / totalTracks}%`;
 
     const rottweiler = document.createElement('img');
     rottweiler.src = rottweilers[index % rottweilers.length];
@@ -58,28 +34,28 @@ function createTrack(index, scaleFactor) {
 
     const nameTag = document.createElement('div');
     nameTag.classList.add('name-tag');
-    nameTag.textContent = names[index] || `Rottweiler ${index + 1}`;
+    nameTag.textContent = participantNames[index];
 
     track.appendChild(rottweiler);
     track.appendChild(nameTag);
     app.appendChild(track);
 }
 
-function startGame() {
-    const scaleFactor = Math.min(1.5, 5 / names.length); // Adjust scale based on the number of participants
+function initializeRace() {
+    app.innerHTML = ''; // Clear existing tracks
 
-    for (let i = 0; i < names.length; i++) {
+    const scaleFactor = Math.min(1.5, 5 / totalTracks); // Adjust size based on participants
+
+    for (let i = 0; i < totalTracks; i++) {
         createTrack(i, scaleFactor);
     }
-
-    setTimeout(startRace, 2000);
 }
 
-function startRace() {
+function startRace(duration) {
     const rottweilerElements = document.querySelectorAll('.rottweiler');
 
     rottweilerElements.forEach(rottweiler => {
-        const raceTime = Math.random() * 5 + 5; // 5 to 10 seconds
+        const raceTime = Math.random() * duration + duration; // Randomize finish time
         const keyframes = [
             { transform: 'translateX(0)' },
             { transform: `translateX(calc(100% - 50px))` }
@@ -104,6 +80,23 @@ function startRace() {
         })[0];
 
         const winnerIndex = rottweilerElementsArray.indexOf(winner);
-        alert(`The winner is ${names[winnerIndex] || `Rottweiler ${winnerIndex + 1}`}!`);
-    }, 11000);
+        alert(`The winner is ${participantNames[winnerIndex]}!`);
+    }, duration * 1000 + 1000);
 }
+
+// User interaction to set names and duration
+function configureRace() {
+    const nameInputs = prompt(`Enter up to ${totalTracks} participant names separated by commas:`);
+    if (nameInputs) {
+        participantNames = nameInputs.split(',').map(name => name.trim()).slice(0, totalTracks);
+    }
+
+    const raceTimeInput = prompt('Enter the race duration in seconds (e.g., 10):');
+    const raceDuration = parseFloat(raceTimeInput) || 10;
+
+    initializeRace();
+    setTimeout(() => startRace(raceDuration), 2000);
+}
+
+// Initialize the race with the default configuration
+configureRace();
