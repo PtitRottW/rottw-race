@@ -1,4 +1,3 @@
-
 const app = document.getElementById('app');
 app.style.background = "linear-gradient(to bottom, #2c2c2c, #1a1a1a)"; // Adding a dark gray gradient background
 app.style.height = "100vh";
@@ -35,12 +34,6 @@ function createTrack(index, scaleFactor) {
     const nameTag = document.createElement('div');
     nameTag.classList.add('name-tag');
     nameTag.textContent = names[index] || `Rottweiler ${index + 1}`;
-    nameTag.style.position = 'absolute';
-    nameTag.style.top = '5px';
-    nameTag.style.left = '5px';
-    nameTag.style.color = 'white';
-    nameTag.style.fontWeight = 'bold';
-    nameTag.style.textShadow = '1px 1px 2px black';
 
     track.appendChild(rottweiler);
     track.appendChild(nameTag);
