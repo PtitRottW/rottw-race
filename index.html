@@ -8,28 +8,185 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
         }
         .track {
             position: relative;
-            width: 100%;
-            height: 100px;
             margin: 10px 0;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid #444;
+            height: 100px;
+            width: 90%;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
         }
         .rottweiler {
             position: absolute;
-            top: 10%;
+            top: 50%;
+            transform: translateY(-50%);
         }
         .name-tag {
             position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        #controls input, #controls button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #participants {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        .participant {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <label for="race-time">Race Duration (seconds):</label>
+        <input type="number" id="race-time" value="10" min="5" max="60">
+
+        <div id="participants">
+            <label>Enter Participant Names:</label>
+            <input type="text" class="participant" placeholder="Participant 1">
+            <input type="text" class="participant" placeholder="Participant 2">
+        </div>
+
+        <button id="add-participant">Add Participant</button>
+        <button id="start-race">Start Race</button>
+    </div>
+
     <div id="app"></div>
-    <script src="race_script.js"></script>
+
+    <script>
+        const addParticipantButton = document.getElementById('add-participant');
+        const participantsContainer = document.getElementById('participants');
+        const startRaceButton = document.getElementById('start-race');
+        const raceTimeInput = document.getElementById('race-time');
+
+        // Add more participant inputs dynamically
+        addParticipantButton.addEventListener('click', () => {
+            if (participantsContainer.children.length < 21) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.classList.add('participant');
+                input.placeholder = `Participant ${participantsContainer.children.length}`;
+                participantsContainer.appendChild(input);
+            } else {
+                alert('You can only have up to 20 participants.');
+            }
+        });
+
+        startRaceButton.addEventListener('click', () => {
+            const participantInputs = document.querySelectorAll('.participant');
+            const names = Array.from(participantInputs).map(input => input.value || `Participant ${input.placeholder}`);
+            const raceTime = parseFloat(raceTimeInput.value);
+
+            if (names.length < 2) {
+                alert('Please enter at least 2 participants.');
+                return;
+            }
+
+            if (isNaN(raceTime) || raceTime < 5 || raceTime > 60) {
+                alert('Please enter a valid race time between 5 and 60 seconds.');
+                return;
+            }
+
+            // Clear previous race setup
+            document.getElementById('app').innerHTML = '';
+
+            // Inject names and race duration into the race script
+            startRace(names, raceTime);
+        });
+
+        function startRace(names, raceTime) {
+            const totalTracks = names.length;
+            const app = document.getElementById('app');
+            const rottweilers = [
+                'rottweiler1.png',
+                'rottweiler2.png',
+                'rottweiler3.png',
+                'rottweiler4.png',
+                'rottweiler5.png'
+            ];
+
+            function createTrack(index, scaleFactor) {
+                const track = document.createElement('div');
+                track.classList.add('track');
+
+                const rottweiler = document.createElement('img');
+                rottweiler.src = rottweilers[index % rottweilers.length];
+                rottweiler.classList.add('rottweiler');
+                rottweiler.style.left = '0';
+
+                const size = `${100 * scaleFactor}px`;
+                rottweiler.style.width = size;
+                rottweiler.style.height = size;
+
+                const nameTag = document.createElement('div');
+                nameTag.classList.add('name-tag');
+                nameTag.textContent = names[index] || `Rottweiler ${index + 1}`;
+
+                track.appendChild(rottweiler);
+                track.appendChild(nameTag);
+                app.appendChild(track);
+            }
+
+            const scaleFactor = Math.min(1.5, 5 / totalTracks); // Adjust scale based on the number of participants
+
+            for (let i = 0; i < totalTracks; i++) {
+                createTrack(i, scaleFactor);
+            }
+
+            const rottweilerElements = document.querySelectorAll('.rottweiler');
+
+            rottweilerElements.forEach(rottweiler => {
+                const keyframes = [
+                    { transform: 'translateX(0)' },
+                    { transform: `translateX(calc(100% - 50px))` }
+                ];
+                const timing = {
+                    duration: raceTime * 1000,
+                    easing: 'cubic-bezier(0.42, 0, 0.58, 1)' // Smooth easing
+                };
+                rottweiler.animate(keyframes, timing);
+
+                setTimeout(() => {
+                    rottweiler.style.transform = `translateX(calc(100% - 50px))`;
+                }, raceTime * 1000);
+            });
+
+            setTimeout(() => {
+                const rottweilerElementsArray = Array.from(rottweilerElements);
+                const winner = rottweilerElementsArray.sort((a, b) => {
+                    const aLeft = a.getBoundingClientRect().left;
+                    const bLeft = b.getBoundingClientRect().left;
+                    return bLeft - aLeft;
+                })[0];
+
+                const winnerIndex = rottweilerElementsArray.indexOf(winner);
+                alert(`The winner is ${names[winnerIndex] || `Rottweiler ${winnerIndex + 1}`}!`);
+            }, (raceTime + 1) * 1000);
+        }
+    </script>
 </body>
 </html>
