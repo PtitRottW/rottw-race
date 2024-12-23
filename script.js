@@ -1,5 +1,4 @@
 const app = document.getElementById('app');
-app.style.background = "linear-gradient(to bottom, #2c2c2c, #1a1a1a)"; // Adding a dark gray gradient background
 app.style.height = "100vh";
 app.style.margin = "0";
 app.style.overflow = "hidden";
@@ -13,10 +12,36 @@ const rottweilers = [
     'rottweiler5.png'
 ];
 
-const names = [
-    'Rocky', 'Bella', 'Max', 'Luna', 'Duke', 'Charlie', 'Molly', 'Buddy', 'Daisy', 'Jack',
-    'Sophie', 'Oliver', 'Chloe', 'Teddy', 'Maggie', 'Cooper', 'Lucy', 'Jake', 'Ruby', 'Oscar'
-]; // Add up to 20 names
+let names = []; // This will hold the participant names entered by the user
+
+// Create a form to collect participant names
+const form = document.createElement('form');
+form.id = 'participant-form';
+form.innerHTML = `
+    <h2>Enter Participant Names (Up to ${totalTracks}):</h2>
+    <div id="name-inputs">
+        ${Array.from({ length: totalTracks }).map((_, i) => `<input type="text" placeholder="Name ${i + 1}" class="name-input">`).join('')}
+    </div>
+    <button type="submit">Start Race</button>
+`;
+app.appendChild(form);
+
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    // Collect names from input fields
+    const inputs = document.querySelectorAll('.name-input');
+    names = Array.from(inputs).map(input => input.value.trim()).filter(name => name !== '');
+
+    if (names.length === 0) {
+        alert('Please enter at least one participant name.');
+        return;
+    }
+
+    // Hide the form and start the race
+    form.style.display = 'none';
+    startGame();
+});
 
 function createTrack(index, scaleFactor) {
     const track = document.createElement('div');
@@ -40,10 +65,14 @@ function createTrack(index, scaleFactor) {
     app.appendChild(track);
 }
 
-const scaleFactor = Math.min(1.5, 5 / totalTracks); // Adjust scale based on the number of participants
+function startGame() {
+    const scaleFactor = Math.min(1.5, 5 / names.length); // Adjust scale based on the number of participants
 
-for (let i = 0; i < totalTracks; i++) {
-    createTrack(i, scaleFactor);
+    for (let i = 0; i < names.length; i++) {
+        createTrack(i, scaleFactor);
+    }
+
+    setTimeout(startRace, 2000);
 }
 
 function startRace() {
@@ -78,5 +107,3 @@ function startRace() {
         alert(`The winner is ${names[winnerIndex] || `Rottweiler ${winnerIndex + 1}`}!`);
     }, 11000);
 }
-
-setTimeout(startRace, 2000);
