@@ -1,62 +1,89 @@
-// Images des participants
-const rottweilerImages = [
+
+const app = document.getElementById('app');
+app.style.background = "linear-gradient(to bottom, #2c2c2c, #1a1a1a)"; // Adding a dark gray gradient background
+app.style.height = "100vh";
+app.style.margin = "0";
+app.style.overflow = "hidden";
+
+const totalTracks = 20;
+const rottweilers = [
     'rottweiler1.png',
     'rottweiler2.png',
     'rottweiler3.png',
     'rottweiler4.png',
-    'rottweiler5.png',
-    'rottweiler6.png',
-    'rottweiler7.png',
-    'rottweiler8.png',
-    'rottweiler9.png',
-    'rottweiler10.png',
+    'rottweiler5.png'
 ];
 
-// Fonction pour démarrer la course
+const names = [
+    'Rocky', 'Bella', 'Max', 'Luna', 'Duke', 'Charlie', 'Molly', 'Buddy', 'Daisy', 'Jack',
+    'Sophie', 'Oliver', 'Chloe', 'Teddy', 'Maggie', 'Cooper', 'Lucy', 'Jake', 'Ruby', 'Oscar'
+]; // Add up to 20 names
+
+function createTrack(index, scaleFactor) {
+    const track = document.createElement('div');
+    track.classList.add('track');
+
+    const rottweiler = document.createElement('img');
+    rottweiler.src = rottweilers[index % rottweilers.length];
+    rottweiler.classList.add('rottweiler');
+    rottweiler.style.left = '0';
+
+    const size = `${100 * scaleFactor}px`;
+    rottweiler.style.width = size;
+    rottweiler.style.height = size;
+
+    const nameTag = document.createElement('div');
+    nameTag.classList.add('name-tag');
+    nameTag.textContent = names[index] || `Rottweiler ${index + 1}`;
+    nameTag.style.position = 'absolute';
+    nameTag.style.top = '5px';
+    nameTag.style.left = '5px';
+    nameTag.style.color = 'white';
+    nameTag.style.fontWeight = 'bold';
+    nameTag.style.textShadow = '1px 1px 2px black';
+
+    track.appendChild(rottweiler);
+    track.appendChild(nameTag);
+    app.appendChild(track);
+}
+
+const scaleFactor = Math.min(1.5, 5 / totalTracks); // Adjust scale based on the number of participants
+
+for (let i = 0; i < totalTracks; i++) {
+    createTrack(i, scaleFactor);
+}
+
 function startRace() {
-    const raceTrack = document.getElementById('race-track');
-    const numRottweilers = parseInt(document.getElementById('numRottweilers').value);
-    const raceTime = parseInt(document.getElementById('raceTime').value) * 1000;
+    const rottweilerElements = document.querySelectorAll('.rottweiler');
 
-    // Réinitialiser la piste
-    raceTrack.innerHTML = '';
-    raceTrack.style.height = `${numRottweilers * 60}px`;
+    rottweilerElements.forEach(rottweiler => {
+        const raceTime = Math.random() * 5 + 5; // 5 to 10 seconds
+        const keyframes = [
+            { transform: 'translateX(0)' },
+            { transform: `translateX(calc(100% - 50px))` }
+        ];
+        const timing = {
+            duration: raceTime * 1000,
+            easing: 'cubic-bezier(0.42, 0, 0.58, 1)' // Smooth easing
+        };
+        rottweiler.animate(keyframes, timing);
 
-    // Créer les participants
-    for (let i = 0; i < numRottweilers; i++) {
-        const rottweiler = document.createElement('img');
-        rottweiler.src = rottweilerImages[i % rottweilerImages.length];
-        rottweiler.className = 'rottweiler';
-        rottweiler.style.top = `${i * 60}px`;
-        rottweiler.style.left = '0px';
-        raceTrack.appendChild(rottweiler);
-    }
-
-    // Lancer la course
-    const participants = document.querySelectorAll('.rottweiler');
-    let finishLine = raceTrack.offsetWidth - 100; // Position de la ligne d'arrivée
-
-    participants.forEach((rottweiler) => {
-        const randomDistance = Math.random() * finishLine;
         setTimeout(() => {
-            rottweiler.style.transform = `translateX(${randomDistance}px)`;
-        }, Math.random() * raceTime);
+            rottweiler.style.transform = `translateX(calc(100% - 50px))`;
+        }, raceTime * 1000);
     });
 
-    // Déterminer le gagnant
     setTimeout(() => {
-        let winner = null;
-        let maxDistance = 0;
+        const rottweilerElementsArray = Array.from(rottweilerElements);
+        const winner = rottweilerElementsArray.sort((a, b) => {
+            const aLeft = a.getBoundingClientRect().left;
+            const bLeft = b.getBoundingClientRect().left;
+            return bLeft - aLeft;
+        })[0];
 
-        participants.forEach((rottweiler, index) => {
-            const transform = rottweiler.style.transform;
-            const distance = parseFloat(transform.match(/translateX\((\d+(\.\d+)?)px\)/)[1]);
-            if (distance > maxDistance) {
-                maxDistance = distance;
-                winner = index + 1;
-            }
-        });
-
-        alert(`Le gagnant est le participant #${winner} !`);
-    }, raceTime + 100); // Ajoutez un peu de temps pour la transition
+        const winnerIndex = rottweilerElementsArray.indexOf(winner);
+        alert(`The winner is ${names[winnerIndex] || `Rottweiler ${winnerIndex + 1}`}!`);
+    }, 11000);
 }
+
+setTimeout(startRace, 2000);
